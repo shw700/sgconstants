@@ -3,12 +3,16 @@
 CONST_SCRIPT=./getconsts.sh
 GOSECCO_CONSTANTS=/git/gosecco/constants/go_constants.go
 
+if [ ! -f $GOSECCO_CONSTANTS ]; then
+	echo "Warning: could not find go_constants.go ... output of this script might be broken."
+fi
+
 echo "Checking for any malformed output..."
 $CONST_SCRIPT | egrep -v  '[_a-z]+\s+[_A-Za-z0-9]+[A-Za-z0-9]*\s+.*[0-9].*'
 
 ALL_CATEGORIES=`$CONST_SCRIPT | awk '{print $1}' | sort -u`
 
-ALL_GOSECCO_CONSTANTS=`cat $GOSECCO_CONSTANTS | egrep '\s*AllConstants\["|\s*AllErrors\["|\s*Syscalls\["' | awk -F '"' '{print $2}'| sort -u`
+ALL_GOSECCO_CONSTANTS=`cat $GOSECCO_CONSTANTS | egrep '\s*RegisterConstant\("|\s*RegsterError\("|\s*RegisterSyscall\("' | awk -F '"' '{print $2}'| sort -u`
 ALL_OUR_CONSTANTS=`$CONST_SCRIPT | awk '{print $2}' | sort -u`
 
 echo "Checking to make sure we aren't missing variables from gosecco..."

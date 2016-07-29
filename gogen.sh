@@ -10,19 +10,19 @@ import "errors"
 
 
 type ConstTableEntry struct {
-        name string
-        val uint
+        Name string
+        Val uint
 }
 
 type ConstTable struct {
-        name string
+        Name string
         entries []ConstTableEntry
 }
 
 var AllConstants = []ConstTable { 
 EOF
 
-#var AllConstants = []ConstTable { { name: "prefix", entries: []ConstTableEntry { { name: "a", val: 1 } } } }
+#var AllConstants = []ConstTable { { Name: "prefix", entries: []ConstTableEntry { { Name: "a", Val: 1 } } } }
 
 
 ALL_CATEGORIES=`$CONST_SCRIPT | awk '{print $1}' | sort -u`
@@ -41,19 +41,21 @@ for i in $ALL_CATEGORIES; do
 		echo ","
 	fi
 
-	echo "{ name: \"$i\", entries: []ConstTableEntry {"
-	$CONST_SCRIPT | egrep "^$i " | awk 'BEGIN { first=1 } { if (first == 0) { printf ",\n" } else { first = 0 } printf "     { name: \""$2"\", val: "$3" }"; }'
+	echo "{ Name: \"$i\", entries: []ConstTableEntry {"
+	$CONST_SCRIPT | egrep "^$i " | awk 'BEGIN { first=1 } { if (first == 0) { printf ",\n" } else { first = 0 } printf "     { Name: \""$2"\", Val: "$3" }"; }'
 	echo -n " }"; echo -n " }";
 done
 
 echo " }";
 
 cat << EOF
-func getConstantTableByName(category string) (ConstTable, error) {
+
+
+func GetConstantTableByName(category string) (ConstTable, error) {
 
         for i := 0; i < len(AllConstants); i++ {
 
-                if (AllConstants[i].name == category) {
+                if (AllConstants[i].Name == category) {
                         return AllConstants[i], nil
                 }
 
@@ -65,7 +67,7 @@ func getConstantTableByName(category string) (ConstTable, error) {
 
 
 func getValByConstName(category string, name string) (uint, error) {
-        table, err := getConstantTableByName(category)
+        table, err := GetConstantTableByName(category)
 
         if err != nil {
                 return 0, err
@@ -73,8 +75,8 @@ func getValByConstName(category string, name string) (uint, error) {
 
         for i := 0; i < len(table.entries); i++ {
 
-                if table.entries[i].name == name {
-                        return table.entries[i].val, err
+                if table.entries[i].Name == name {
+                        return table.entries[i].Val, err
                 }
 
         }
@@ -82,8 +84,8 @@ func getValByConstName(category string, name string) (uint, error) {
         return 0, errors.New("could not find constant in specified category")
 }
 
-func getConstByNo(category string, val uint) (string, error) {
-        table, err := getConstantTableByName(category)
+func GetConstByNo(category string, val uint) (string, error) {
+        table, err := GetConstantTableByName(category)
 
         if err != nil {
                 return "", err
@@ -91,12 +93,41 @@ func getConstByNo(category string, val uint) (string, error) {
 
         for i := 0; i < len(table.entries); i++ {
 
-                if table.entries[i].val == val {
-                        return table.entries[i].name, nil
+                if table.entries[i].Val == val {
+                        return table.entries[i].Name, nil
                 }
 
         }
 
         return "", errors.New("could not find value in specified category")
 }
+
+func GetConstByBitmask(category string, val uint) (string, error) {
+        table, err := GetConstantTableByName(category)
+
+        if err != nil {
+                return "", err
+        }
+
+	constName := ""
+	first := 1
+
+        for i := 0; i < len(table.entries); i++ {
+
+		if table.entries[i].Val & val == val {
+
+			if first == 0 {
+				constName += "|"
+			} else {
+				first = 0
+			}
+
+			constName += table.entries[i].Name
+                }
+
+        }
+
+        return constName, nil
+}
+
 EOF
