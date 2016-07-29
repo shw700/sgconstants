@@ -66,6 +66,8 @@ function run_all_tests() {
 	grab_until_not /usr/include/linux/netlink.h "^#define NETLINK_ROUTE" "#define" | egrep "^\s*#define\s+NETLINK_" | awk '{print "netlink_type "$2" "$3 }'
 	cat /usr/include/linux/netlink.h | egrep "^\s*#define\s+NLM_.+\s+.*[0-9]+" | awk '{print "netlink_flags "$2" "$3 }'
 
+	cat /usr/include/asm-generic/mman-common.h | egrep "^\s*#define\s+PROT_" | awk '{print "mmap_prot "$2" "$3 }'
+
 	grab_until /usr/include/linux/fs.h "MS_RDONLY" "MS_RMT_MASK" | egrep "^\s*#define\s+MS_" | awk '{print "mount_flags "$2" "$3 }'
 
 	cat /usr/include/x86_64-linux-gnu/bits/socket.h | egrep "^\s*MSG_[_a-zA-Z0-9]+\s+=\s+.*[0-9]+.*" | tr -d ',' | awk '{print "msg_io_flags "$1" "$3 }'

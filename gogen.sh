@@ -114,7 +114,12 @@ func GetConstByBitmask(category string, val uint) (string, error) {
 
         for i := 0; i < len(table.entries); i++ {
 
-		if table.entries[i].Val & val == val {
+		// Just return if we have a straight up match.
+		if table.entries[i].Val == val {
+			return table.entries[i].Name, nil
+		}
+
+		if table.entries[i].Val != 0 && (table.entries[i].Val & val == table.entries[i].Val) {
 
 			if first == 0 {
 				constName += "|"
