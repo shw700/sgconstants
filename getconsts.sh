@@ -53,8 +53,12 @@ function run_all_tests() {
 	cat /usr/include/linux/if.h | grep IFF_ | grep '= 1' | tr -d ',' | awk '{print "iff_net_device_flags "$1" "$3 }'
 	cat /usr/include/linux/inotify.h | egrep "^\s*#define\s+IN_" | grep 0x | awk '{print "inotify_flags "$2" "$3 }'
 
+	cat /usr/include/asm-generic/fcntl.h | egrep "^\s*#define\s+O_.+\s+0[0-9]+.*" | egrep -v 'IOR|IOW' | awk '{print "open_mode "$2" "$3 }'
+
 	#cat /usr/include/asm-generic/ioctls.h | egrep "^\s*#define\s+T" | egrep -v 'IOR|IOW' | egrep -v 'TIOCPKT_|TIOCSER_TEMT' | awk '{print "ioctl_code "$2" "$3 }'
-	cat /usr/include/asm-generic/ioctls.h | egrep "^\s*#define\s+.*\s+0x54" | awk '{print "ioctl_code "$2" "$3 }'
+	#cat /usr/include/asm-generic/ioctls.h | egrep "^\s*#define\s+.*\s+0x54" | awk '{print "ioctl_code "$2" "$3 }'
+	cat /usr/include/asm-generic/ioctls.h | egrep "^\s*#define\s+.*\s+0x54|^\s*#define\s+TIOCPKT.+" | awk '{print "ioctl_code "$2" "$3 }'
+	cat /usr/include/asm-generic/termios.h | egrep "^\s*#define\s+TIOCM_.+\s+[0-9]+.*" | egrep -v 'IOR|IOW' | awk '{print "ioctl_termios "$2" "$3 }'
 
 	grab_between /usr/include/linux/in6.h "IPV6_ADDRFORM" "cantfindthisrandomgarbagestring" | egrep "^\s*#define\s+IPV6_" | awk '{print "ipv6_socket_options "$2" "$3 }'
 
@@ -77,6 +81,8 @@ function run_all_tests() {
 	cat /usr/include/x86_64-linux-gnu/sys/ptrace.h | egrep "^\s*PTRACE_.+[0-9]+" | grep -v '(' | tr -d ',' | awk '{print "ptrace "$1" "$3}'
 
 	cat /usr/include/asm-generic/resource.h | sed -re 's/^#\s+define/#define/' | egrep "^\s*#define\s+RLIMIT" | awk '{print "rlimit "$2" "$3 }'
+
+	cat /usr/include/linux/rtnetlink.h | egrep "\s+RTM_" | grep '=' | tr -d ',' | awk '{print "rtnetlink_msg_type "$1" "$3 }'
 	cat /usr/include/linux/sockios.h | egrep "^\s*#define\s+SIOC" | awk '{print "ioctl_socket "$2" "$3 }'
 
 	cat /usr/include/asm-generic/socket.h | egrep "^\s*#define\s+SO_.+\s+[0-9]+" | awk '{print "setsockopt_optname "$2" "$3 }'
