@@ -55,6 +55,8 @@ function run_all_tests() {
 
 	cat /usr/include/asm-generic/fcntl.h | egrep "^\s*#define\s+O_.+\s+0[0-9]+.*" | egrep -v 'IOR|IOW' | awk '{print "open_mode "$2" "$3 }'
 
+	cat /usr/include/linux/futex.h | egrep "^\s*#define\s+FUTEX_.+\s+[0-9]+.*" | grep -v FUTEX_OP | grep -v 0x | awk '{print "futex "$2" "$3 }'
+
 	#cat /usr/include/asm-generic/ioctls.h | egrep "^\s*#define\s+T" | egrep -v 'IOR|IOW' | egrep -v 'TIOCPKT_|TIOCSER_TEMT' | awk '{print "ioctl_code "$2" "$3 }'
 	#cat /usr/include/asm-generic/ioctls.h | egrep "^\s*#define\s+.*\s+0x54" | awk '{print "ioctl_code "$2" "$3 }'
 	cat /usr/include/asm-generic/ioctls.h | egrep "^\s*#define\s+.*\s+0x54|^\s*#define\s+TIOCPKT.+" | awk '{print "ioctl_code "$2" "$3 }'
