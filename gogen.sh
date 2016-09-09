@@ -16,13 +16,13 @@ type ConstTableEntry struct {
 
 type ConstTable struct {
         Name string
-        entries []ConstTableEntry
+        Entries []ConstTableEntry
 }
 
 var AllConstants = []ConstTable { 
 EOF
 
-#var AllConstants = []ConstTable { { Name: "prefix", entries: []ConstTableEntry { { Name: "a", Val: 1 } } } }
+#var AllConstants = []ConstTable { { Name: "prefix", Entries: []ConstTableEntry { { Name: "a", Val: 1 } } } }
 
 
 ALL_CATEGORIES=`$CONST_SCRIPT | awk '{print $1}' | sort -u`
@@ -41,7 +41,7 @@ for i in $ALL_CATEGORIES; do
 		echo ","
 	fi
 
-	echo "{ Name: \"$i\", entries: []ConstTableEntry {"
+	echo "{ Name: \"$i\", Entries: []ConstTableEntry {"
 	$CONST_SCRIPT | egrep "^$i " | awk 'BEGIN { first=1 } { if (first == 0) { printf ",\n" } else { first = 0 } printf "     { Name: \""$2"\", Val: "$3" }"; }'
 	echo -n " }"; echo -n " }";
 done
@@ -73,10 +73,10 @@ func getValByConstName(category string, name string) (uint, error) {
                 return 0, err
         }
 
-        for i := 0; i < len(table.entries); i++ {
+        for i := 0; i < len(table.Entries); i++ {
 
-                if table.entries[i].Name == name {
-                        return table.entries[i].Val, err
+                if table.Entries[i].Name == name {
+                        return table.Entries[i].Val, err
                 }
 
         }
@@ -91,10 +91,10 @@ func GetConstByNo(category string, val uint) (string, error) {
                 return "", err
         }
 
-        for i := 0; i < len(table.entries); i++ {
+        for i := 0; i < len(table.Entries); i++ {
 
-                if table.entries[i].Val == val {
-                        return table.entries[i].Name, nil
+                if table.Entries[i].Val == val {
+                        return table.Entries[i].Name, nil
                 }
 
         }
@@ -112,14 +112,14 @@ func GetConstByBitmask(category string, val uint) (string, error) {
 	constName := ""
 	first := 1
 
-        for i := 0; i < len(table.entries); i++ {
+        for i := 0; i < len(table.Entries); i++ {
 
 		// Just return if we have a straight up match.
-		if table.entries[i].Val == val {
-			return table.entries[i].Name, nil
+		if table.Entries[i].Val == val {
+			return table.Entries[i].Name, nil
 		}
 
-		if table.entries[i].Val != 0 && (table.entries[i].Val & val == table.entries[i].Val) {
+		if table.Entries[i].Val != 0 && (table.Entries[i].Val & val == table.Entries[i].Val) {
 
 			if first == 0 {
 				constName += "|"
@@ -127,7 +127,7 @@ func GetConstByBitmask(category string, val uint) (string, error) {
 				first = 0
 			}
 
-			constName += table.entries[i].Name
+			constName += table.Entries[i].Name
                 }
 
         }
