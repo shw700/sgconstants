@@ -14,6 +14,7 @@ var progName = ""
 func usage() {
 	fmt.Fprintln(os.Stderr, "Usage: "+progName+" [-c category] <-m> <val>     where")
 	fmt.Fprintln(os.Stderr, "  -c / -category:   select a category (\"all\" by default),")
+	fmt.Fprintln(os.Stderr, "  -m / -mask:       guesses a lookup of a numerical value as a bitmask,")
 	fmt.Fprintln(os.Stderr, "  -h / -help:       display this help message,")
 }
 
@@ -72,6 +73,12 @@ func main() {
 
 	var nFound = 0
 	var nTotal = 0
+
+	var findVals[] string
+
+	if !searchVal {
+		findVals = strings.Split(findVal, "|")
+	}
 
 	for i := 0; i < len(constants.AllConstants); i++ {
 
@@ -135,11 +142,38 @@ func main() {
 			}
 
 			fmtStr := "  %-" + strconv.Itoa(longestNameLen) + "s    = %d (0x%x)\n"
+
 			var starting = true
+			var findValsSum uint = 0
 
 			for j := 0; j < len(constants.AllConstants[i].Entries); j++ {
 
-				if (searchVal && (uint64(constants.AllConstants[i].Entries[j].Val) == findValI)) ||
+				if len(findVals) > 1 {
+
+					for k := 0; k < len(findVals); k++ {
+
+						if (findVals[k] == constants.AllConstants[i].Entries[j].Name) {
+
+							if (starting) {
+								fmt.Println(hdrName)
+								fmt.Printf("  ")
+							} else {
+								fmt.Printf("|");
+							}
+
+							fmt.Printf("%s(%x)", findVals[k], constants.AllConstants[i].Entries[j].Val)
+							findValsSum |= constants.AllConstants[i].Entries[j].Val
+
+							if (starting) {
+								starting = false;
+							}
+
+							nFound++
+						}
+
+					}
+
+				} else if (searchVal && (uint64(constants.AllConstants[i].Entries[j].Val) == findValI)) ||
 					(len(findVal) == 0) || (findVal == constants.AllConstants[i].Entries[j].Name) {
 
 					if (starting) {
@@ -152,6 +186,10 @@ func main() {
 					nFound++
 				}
 
+			}
+
+			if len(findVals) > 1 {
+				fmt.Printf(" = 0x%x\n", findValsSum)
 			}
 
 		} else {
