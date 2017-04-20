@@ -93,6 +93,8 @@ function run_all_tests() {
 	cat /usr/include/asm/unistd_64.h | egrep "^\s*#define\s+__NR_" | sed 's/__NR_//' | awk '{print "syscall_name "$2" "$3 }'
 	cat /usr/include/asm-generic/errno-base.h /usr/include/asm-generic/errno.h | egrep "^\s*#define\s+E" | awk '{print "errno "$2" "$3 }'
 	cat /usr/include/asm/signal.h | egrep "^\s*#define\s+SIG" | awk '{print "signal "$2" "$3 }'
+
+	egrep -r "^\s*#\s*define\s+SOL_[A-Z]+\s+[0-9]" /usr/include/ | awk -F '#' '{print $2}' | awk '{print "sol_type", $2, $3}' | sort -u -n -k 3
 }
 
 
