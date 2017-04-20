@@ -100,6 +100,11 @@ func main() {
 					var curName = constants.AllConstants[i].Entries[j].Name
 					var curVal = uint64(constants.AllConstants[i].Entries[j].Val)
 
+					// Ignore correlating zero values to bitmasks, since they will always match any non-zero value.
+					if findValI != 0 && curVal == 0 {
+						continue
+					}
+
 					if searchVal && ((findValI & curVal) == curVal) {
 						bitVal |= curVal
 
