@@ -94,7 +94,9 @@ function run_all_tests() {
 	cat /usr/include/asm-generic/errno-base.h /usr/include/asm-generic/errno.h | egrep "^\s*#define\s+E" | awk '{print "errno "$2" "$3 }'
 	cat /usr/include/asm/signal.h | egrep "^\s*#define\s+SIG" | awk '{print "signal "$2" "$3 }'
 
-	egrep -r "^\s*#\s*define\s+SOL_[A-Z]+\s+[0-9]" /usr/include/ | awk -F '#' '{print $2}' | awk '{print "sol_type", $2, $3}' | sort -u -n -k 3
+	egrep -r "^\s*#\s*define\s+SOL_[A-Z]+\s+[0-9]" /usr/include/ | awk -F '#' '{print $2}' | awk '{print "sol_level", $2, $3}' | sort -u -n -k 3
+
+	grab_between /usr/include/linux/tcp.h "TCP_NODELAY" "TCP_REPAIR_WINDOW" | egrep "^\s*#define\s+TCP_" | awk '{print "sockopt_tcp "$2" "$3 }'
 }
 
 
