@@ -135,4 +135,35 @@ func GetConstByBitmask(category string, val uint) (string, error) {
         return constName, nil
 }
 
+// Functions for gosecco compatibility
+
+func GetSyscall(name string) (uint32, bool) {
+        res, ok := getValByConstName("syscall_name", name)
+        return uint32(res), ok==nil
+}
+
+func GetError(name string) (uint32, bool) {
+        res, ok := getValByConstName("errno", name)
+        return uint32(res), ok==nil
+}
+
+func GetConstant(name string) (uint32, bool) {
+
+        for t := 0; t < len(AllConstants); t++ {
+                table := AllConstants[t]
+
+                for i := 0; i < len(table.Entries); i++ {
+
+                        if table.Entries[i].Name == name {
+                                return uint32(table.Entries[i].Val), true
+                        }
+
+                }
+
+        }
+
+        return 0, false
+}
+
+
 EOF
