@@ -29,8 +29,8 @@ function run_all_tests() {
 	#grab_between /usr/include/linux/netlink.h "#define NETLINK_ROUTE" "#define NETLINK_CRYPTO"
 	#grab_until_not /usr/include/linux/netlink.h "#define NETLINK_ROUTE" "#define" | eval $FILTER_ALIASES
 
-	cat /usr/include/x86_64-linux-gnu/bits/socket.h | egrep "^\s*#define\s+PF_" | sed 's/PF_/AF_/' | awk '{print "socket_family "$2" "$3 }'
-	cat /usr/include/x86_64-linux-gnu/bits/socket_type.h | egrep "^\s*SOCK_.+\s=\s.+" | tr -d ',' | awk '{print "socket_type "$1" "$3 }'
+	cat /usr/include/$(uname -m)-linux-gnu/bits/socket.h | egrep "^\s*#define\s+PF_" | sed 's/PF_/AF_/' | awk '{print "socket_family "$2" "$3 }'
+	cat /usr/include/$(uname -m)-linux-gnu/bits/socket_type.h | egrep "^\s*SOCK_.+\s=\s.+" | tr -d ',' | awk '{print "socket_type "$1" "$3 }'
 
 	cat /usr/include/linux/if_arp.h | egrep "^\s*#define\s+ARPHRD_" | awk '{print "arp_hardware "$2" "$3 }'
 
@@ -43,7 +43,7 @@ function run_all_tests() {
 	#missing EPOLL_CLOEXEC
 	cat /usr/include/linux/eventpoll.h | egrep "^\s*#define\s+EPOLL_" | egrep -v 'EPOLL_PACKED|EPOLL_CLOEXEC' | awk '{print "epoll "$2" "$3 }'
 
-	cat /usr/include/x86_64-linux-gnu/sys/epoll.h | grep EPOLL | grep '=' | grep -v u | tr -d ',' | awk '{print "epoll "$1" "$3 }'
+	cat /usr/include/$(uname -m)-linux-gnu/sys/epoll.h | grep EPOLL | grep '=' | grep -v u | tr -d ',' | awk '{print "epoll "$1" "$3 }'
 	cat /usr/include/linux/if_ether.h | egrep "^\s*#define\s+ETH_P_" | awk '{print "eth_prot_id "$2" "$3 }'
 	cat /usr/include/asm-generic/fcntl.h | egrep "^\s*#define\s+F_" | grep -v F_LINUX_SPECIFIC_BASE |awk '{print "fcntl "$2" "$3 }'
 	
@@ -66,7 +66,7 @@ function run_all_tests() {
 
 	cat /usr/include/netinet/in.h | egrep "\s*IPPROTO_.*\s+=\s+" | tr -d ',' | awk '{print "ip_proto "$1" "$3 }'	
 
-	cat /usr/include/x86_64-linux-gnu/bits/mman*.h | sed -re 's/^#\s+define/#define/' | egrep "^\s*#\s*define\s+MAP_[_a-zA-Z0-9]+\s+.*[0-9]+.*" | awk '{print "mmap_flags "$2" "$3 }'
+	cat /usr/include/$(uname -m)-linux-gnu/bits/mman*.h | sed -re 's/^#\s+define/#define/' | egrep "^\s*#\s*define\s+MAP_[_a-zA-Z0-9]+\s+.*[0-9]+.*" | awk '{print "mmap_flags "$2" "$3 }'
 	cat /usr/include/asm-generic/mman-common.h | sed -re 's/^#\s+define/#define/' | egrep "^\s*#\s*define\s+MADV_[_a-zA-Z0-9]+\s+.*[0-9]+.*" | awk '{print "madvise_advice "$2" "$3 }'
 	
 	grab_until_not /usr/include/linux/netlink.h "^#define NETLINK_ROUTE" "#define" | egrep "^\s*#define\s+NETLINK_" | awk '{print "netlink_type "$2" "$3 }'
@@ -76,11 +76,11 @@ function run_all_tests() {
 
 	grab_until /usr/include/linux/fs.h "MS_RDONLY" "MS_RMT_MASK" | egrep "^\s*#define\s+MS_" | awk '{print "mount_flags "$2" "$3 }'
 
-	cat /usr/include/x86_64-linux-gnu/bits/socket.h | egrep "^\s*MSG_[_a-zA-Z0-9]+\s+=\s+.*[0-9]+.*" | tr -d ',' | awk '{print "msg_io_flags "$1" "$3 }'
+	cat /usr/include/$(uname -m)-linux-gnu/bits/socket.h | egrep "^\s*MSG_[_a-zA-Z0-9]+\s+=\s+.*[0-9]+.*" | tr -d ',' | awk '{print "msg_io_flags "$1" "$3 }'
 
 	cat /usr/include/linux/prctl.h | egrep "^\s*#define\s+PR_" | awk '{print "prctl_opts "$2" "$3 }'
 	cat /usr/include/asm/ptrace-abi.h | sed -re 's/^#\s+define/#define/' | egrep "^\s*#\s*define\s+PTRACE_.+[0-9]+" | awk '{print "ptrace "$2" "$3 }'
-	cat /usr/include/x86_64-linux-gnu/sys/ptrace.h | egrep "^\s*PTRACE_.+[0-9]+" | grep -v '(' | tr -d ',' | awk '{print "ptrace "$1" "$3}'
+	cat /usr/include/$(uname -m)-linux-gnu/sys/ptrace.h | egrep "^\s*PTRACE_.+[0-9]+" | grep -v '(' | tr -d ',' | awk '{print "ptrace "$1" "$3}'
 
 	cat /usr/include/asm-generic/resource.h | sed -re 's/^#\s+define/#define/' | egrep "^\s*#define\s+RLIMIT" | awk '{print "rlimit "$2" "$3 }'
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CONST_SCRIPT=./getconsts.sh
-GOSECCO_CONSTANTS=/git/gosecco/constants/go_constants.go
+GOSECCO_CONSTANTS=/sgbuild/build/src/github.com/twtiger/gosecco/constants/go_constants.go
 
 if [ ! -f $GOSECCO_CONSTANTS ]; then
 	echo "Warning: could not find go_constants.go ... output of this script might be broken."
