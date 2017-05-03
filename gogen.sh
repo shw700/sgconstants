@@ -19,6 +19,18 @@ type ConstTable struct {
         Entries []ConstTableEntry
 }
 
+var ConstNameOverrides = map[string]string {
+	"EAGAIN": "EWOULDBLOCK",
+	"EDEADLK": "EDEADLOCK",
+}
+
+var ConstValOverrides = map[string]uint {
+	"F_GETLK64": 5,
+	"F_SETLK64": 6,
+	"F_SETLKW64": 7,
+	"O_LARGEFILE": 0,
+}
+
 var AllConstants = []ConstTable { 
 EOF
 
@@ -94,6 +106,9 @@ func GetConstByNo(category string, val uint) (string, error) {
         for i := 0; i < len(table.Entries); i++ {
 
                 if table.Entries[i].Val == val {
+			if val, ok := ConstNameOverrides[table.Entries[i].Name]; ok {
+				return val, nil
+			}
                         return table.Entries[i].Name, nil
                 }
 
@@ -148,6 +163,9 @@ func GetError(name string) (uint32, bool) {
 }
 
 func GetConstant(name string) (uint32, bool) {
+	if val, ok := ConstValOverrides[name]; ok {
+		return uint32(val), true
+	}
 
         for t := 0; t < len(AllConstants); t++ {
                 table := AllConstants[t]
